@@ -20,10 +20,10 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model,'id_category')->dropDownList($categories) ?>
 
-    <?= $form->field($model, 'photo')->fileInput(['maxlength' => true]) ?>
+    <?= $form->field($model, 'photo')->fileInput() ?>
 
     <div class="form-group">
-        <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+        <?= Html::submitButton('Добавить', ['class' => 'btn btn-success']) ?>
     </div>
 
     <?php ActiveForm::end(); ?>

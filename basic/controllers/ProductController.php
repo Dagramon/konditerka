@@ -75,10 +75,13 @@ class ProductController extends Controller
         $categories = ArrayHelper::map($categories, 'id_category', 'name_category');
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                $model->photo = UploadedFile::getInstance($model, 'photo'); //TODO
+            if ($model->load($this->request->post())) {
+                $model->photo = UploadedFile::getInstance($model, 'photo');
                 $newFileName = md5($model->photo->baseName . '.' . $model->photo->extension . time());
-                return $this->redirect(['view', 'id_product' => $model->id_product]);
+                $model->photo->saveAs('@app/web/uploads/' . $newFileName . '.' . $model->photo->extension);
+                $model->photo = $newFileName . '.' . $model->photo->extension;
+                $model->save();
+                return $this->redirect(['/product']);
             }
         } else {
             $model->loadDefaultValues();
