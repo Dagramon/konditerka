@@ -15,6 +15,7 @@ use Yii;
  * @property int $id_user
  * @property string $description_order
  * @property string $order_status
+ * @property string $cancel_reason
  *
  * @property Product $product
  * @property User $user
@@ -57,11 +58,12 @@ class Order extends \yii\db\ActiveRecord
             'id_order' => 'Id Order',
             'timestamp_order' => 'Время заказа',
             'user_adress' => 'Адрес заказчика',
-            'id_product' => 'Id Product',
+            'id_product' => 'Продукт',
             'amount' => 'Количество',
             'id_user' => 'Id User',
             'description_order' => 'Описание заказа',
             'order_status' => 'Статус',
+            'cancel_reason' => 'Причина отклонения',
         ];
     }
 

@@ -25,6 +25,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'amount') ?>
 
+    <?= $form->field($model, 'price_product') ?>
+
     <?php // echo $form->field($model, 'id_category') ?>
 
     <?php // echo $form->field($model, 'photo') ?>

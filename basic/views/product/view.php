@@ -7,7 +7,7 @@ use yii\widgets\DetailView;
 /** @var app\models\Product $model */
 
 $this->title = $model->id_product;
-$this->params['breadcrumbs'][] = ['label' => 'Products', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Продукция', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
@@ -16,8 +16,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <h1><?= Html::encode($this->title) ?></h1>
 
     <p>
-        <?= Html::a('Update', ['update', 'id_product' => $model->id_product], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id_product' => $model->id_product], [
+        <?= Html::a('Редактировать', ['update', 'id_product' => $model->id_product], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Удалить', ['delete', 'id_product' => $model->id_product], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -31,6 +31,7 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id_product',
             'name_product',
+            'price_product',
             'description_product:ntext',
             'timestamp_arrival',
             'amount',

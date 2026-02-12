@@ -9,6 +9,7 @@ use Yii;
  *
  * @property int $id_product
  * @property string $name_product
+ * @property int $price_product
  * @property string $description_product
  * @property string $timestamp_arrival
  * @property int $amount
@@ -36,10 +37,10 @@ class Product extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name_product', 'description_product', 'amount', 'id_category', 'photo'], 'required'],
+            [['name_product', 'description_product', 'amount', 'id_category', 'photo', 'price_product'], 'required'],
             [['description_product'], 'string'],
             [['timestamp_arrival'], 'safe'],
-            [['amount', 'id_category'], 'integer'],
+            [['amount', 'id_category', 'price_product'], 'integer'],
             [['name_product', 'photo'], 'string', 'max' => 255],
             [['photo'], 'file', 'extensions' => 'png, jpg, jpeg, bmp', 'maxSize' => 10*1024*1024],
             [['id_category'], 'exist', 'skipOnError' => true, 'targetClass' => Category::class, 'targetAttribute' => ['id_category' => 'id_category']],
@@ -52,13 +53,14 @@ class Product extends \yii\db\ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id_product' => 'Id Product',
-            'name_product' => 'Name Product',
-            'description_product' => 'Description Product',
-            'timestamp_arrival' => 'Timestamp Arrival',
-            'amount' => 'Amount',
-            'id_category' => 'Id Category',
-            'photo' => 'Photo',
+            'id_product' => 'Id Продукта',
+            'name_product' => 'Название продукта',
+            'price_product' => 'Цена',
+            'description_product' => 'Описание продукта',
+            'timestamp_arrival' => 'Дата прибытия',
+            'amount' => 'Количество',
+            'id_category' => 'Id Категории',
+            'photo' => 'Фото',
         ];
     }
 

@@ -103,6 +103,8 @@ class ProductController extends Controller
     public function actionUpdate($id_product)
     {
         $model = $this->findModel($id_product);
+        $categories = Category::find()->all();
+        $categories = ArrayHelper::map($categories, 'id_category', 'name_category');
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id_product' => $model->id_product]);
@@ -110,6 +112,7 @@ class ProductController extends Controller
 
         return $this->render('update', [
             'model' => $model,
+            'categories' => $categories,
         ]);
     }
 

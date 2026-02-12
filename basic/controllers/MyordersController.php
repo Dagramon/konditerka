@@ -3,8 +3,9 @@
 namespace app\controllers;
 
 use app\models\Order;
-use app\models\RegForm;
 use app\models\OrderSearch;
+use app\models\Product;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -80,12 +81,16 @@ class MyordersController extends Controller
      */
     public function actionCreate()
     {
-        $model = new RegForm();
+        $model = new Order();
+
+        $products = Product::find()->all();
+        $products = ArrayHelper::map($products, 'id_product', 'name_product');
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                Yii::$app->user->login($model);
-                return $this->redirect(['/user']);
+            if ($model->load($this->request->post())) {
+                $model->id_user = Yii::$app->user->identity->id_user;
+                $model->save();
+                return $this->redirect(['/myorders']);
             }
         } else {
             $model->loadDefaultValues();
@@ -93,6 +98,7 @@ class MyordersController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'products' => $products,
         ]);
     }
 
@@ -123,13 +129,17 @@ class MyordersController extends Controller
      * @return \yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id_user)
+    public function actionDelete($id_order)
     {
-        $this->findModel($id_user)->delete();
+        if ($this->findModel($id_order)->order_status == 'Новый') {
+            $this->findModel($id_order)->delete();
+            Yii::$app->session->setFlash('success', 'Заявка удалена');
+        } else {
+            Yii::$app->session->setFlash('danger', 'Заявка не может быть удалена, так как её статус был изменён администратором');
+        }
 
         return $this->redirect(['index']);
     }
-
     /**
      * Finds the User model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -137,7 +147,7 @@ class MyordersController extends Controller
      * @return User the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id_user)
+    protected function findModel($id_order)
     {
         if (($model = Order::findOne(['id_order' => $id_order])) !== null) {
             return $model;

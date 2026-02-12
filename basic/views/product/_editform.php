@@ -20,9 +20,7 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'price_product')->input('number') ?>
 
-    <?= $form->field($model, 'id_category')->dropDownList($categories) ?>
-
-    <?= $form->field($model, 'photo')->fileInput() ?>
+    <?= $form->field($model,'id_category')->dropDownList($categories) ?>
 
     <div class="form-group">
         <?= Html::submitButton('Добавить', ['class' => 'btn btn-success']) ?>

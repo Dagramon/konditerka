@@ -2,8 +2,14 @@
 
 namespace app\controllers;
 
+use Yii;
 use app\models\Order;
+use app\models\OrderCancelForm;
+use app\models\OrderSendingForm;
+use app\models\OrderFinishForm;
 use app\models\OrderSearch;
+use app\models\Product;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -29,6 +35,17 @@ class OrderController extends Controller
                 ],
             ]
         );
+    }
+    public function beforeAction($action)
+    {
+        if (Yii::$app->user->identity->user_role != 1) {
+            $this->redirect('/site/login');
+            return false;
+        }
+        if (!parent::beforeAction($action)) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -69,9 +86,14 @@ class OrderController extends Controller
     {
         $model = new Order();
 
+        $products = Product::find()->all();
+        $products = ArrayHelper::map($products, 'id_product', 'name_product');
+
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id_order' => $model->id_order]);
+            if ($model->load($this->request->post())) {
+                $model->id_user = Yii::$app->user->identity->id_user;
+                $model->save();
+                return $this->redirect(['/order']);
             }
         } else {
             $model->loadDefaultValues();
@@ -79,6 +101,7 @@ class OrderController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'products' => $products,
         ]);
     }
 
@@ -114,6 +137,64 @@ class OrderController extends Controller
         $this->findModel($id_order)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    public function actionSend($id_order)
+    {
+        $model = OrderSendingForm::findOne($id_order);
+
+        $product = Product::findOne([$model->id_product]);
+
+        if ($this->request->isPost) {
+
+            if ($model->load($this->request->post()) && ($product->amount - $model->amount >= 0)) {
+                $product->amount -= $model->amount;
+                $model->order_status = 'В пути';
+                $model->save();
+                $product->save();
+                return $this->redirect(['/order']);
+            }
+        } else {
+            $model->loadDefaultValues();
+        }
+
+        return $this->render('send', [
+            'model' => $model,
+        ]);
+    }
+    public function actionFinish($id_order)
+    {
+        $model = OrderSendingForm::findOne($id_order);
+
+        if ($this->request->isPost) {
+
+            if ($model->load($this->request->post())) {
+                $model->order_status = 'Выполнен';
+                $model->save();
+                return $this->redirect(['/order']);
+            }
+        } else {
+            $model->loadDefaultValues();
+        }
+
+        return $this->render('finish', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionCancel($id_order)
+    {
+        $model = OrderCancelForm::findOne($id_order);
+
+        if ($this->request->isPost && $model->load($this->request->post())) {
+            $model->order_status = 'Отклонён';
+            $model->save();
+            return $this->redirect(['index']);
+        }
+
+        return $this->render('cancel', [
+            'model' => $model,
+        ]);
     }
 
     /**
